@@ -1,3 +1,4 @@
+from __future__ import division
 from collections import defaultdict
 from math import log
 tags=['science', 'style', 'culture', 'life', 'economics', 'business', 'travel',
@@ -34,9 +35,9 @@ def train():
 
 
     for tag, word in w_freq:
-        (w_freq[tag, word]) =log(((w_freq[tag, word]))/(w_class[tag]),10**(-8));
+        (w_freq[tag, word]) =log(((w_freq[tag, word]))/(w_class[tag]),10**(-7));
     for f in classes:
-        classes[f] =log(classes[f]/str_quan,10**(-8));
+        classes[f] =log(classes[f]/str_quan,10**(-7));
 
     return classes, w_freq,w_class;
 
@@ -46,7 +47,7 @@ k = 0;
 classes,w_freq,w_class=train();
 file=open('news_output','w');
 for line in test:
-    probability = defaultdict(lambda: 0);
+    probability = defaultdict(lambda: 1);
 
     count = 0;
     k = 0;
@@ -63,20 +64,19 @@ for line in test:
             word = word[:len(word) - 1];
         for tag in tags:
            if(w_freq[tag,word]==0):
-               w_freq[tag,word]=log(1/(2*w_class[tag]),10**(-8));
+               w_freq[tag,word]=1/(2*w_class[tag]);
+           probability[tag]*=w_freq[tag,word];
 
-           probability[tag]+=w_freq[tag,word];
 
-
-    print(probability['style']);
     for tag in tags:
-        probability[tag]+=classes[tag];
-    min=probability['sport'];
+        probability[tag]*=classes[tag];
+    max=probability['sport'];
 
     cl='sport';
     for tag in tags:
-        if (probability[tag]<min):
-            min=probability[tag];
+
+        if (probability[tag]>max):
+            max=probability[tag];
             cl=tag;
 
 
